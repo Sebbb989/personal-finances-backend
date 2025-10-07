@@ -1,10 +1,9 @@
-<<<<<<< HEAD
+/node_modules
 node_modules
 # Keep environment variables out of version control
 .env
 
 /generated/prisma
-=======
 # Nestjs specific
 /dist
 /node_modules
@@ -29,5 +28,4 @@ lerna-debug.log*
 # temp directory
 .temp
 .tmp
->>>>>>> 28113d1f7d21225759a1e2d9cddcb838f8eb26af
 coverage/
