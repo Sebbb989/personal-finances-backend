@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, NotFoundException, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, NotFoundException, UsePipes, ValidationPipe, BadRequestException } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
 
+import { ApiBadRequestResponse } from '@nestjs/swagger';
 @ApiTags('user')
 @Controller('user')
 export class UserController {
@@ -26,20 +27,31 @@ export class UserController {
 	}
 
 	@Post()
-	@ApiOperation({ summary: 'Create a new user' })
-	@ApiResponse({ status: 201, description: 'User created.' })
-	@UsePipes(new ValidationPipe({ whitelist: true }))
-	async create(@Body() body: CreateUserDto) {
-		return this.userService.create(body);
-	}
+		@ApiOperation({ summary: 'Create a new user' })
+		@ApiResponse({ status: 201, description: 'User created.' })
+		@ApiBadRequestResponse({ description: 'Validation failed or email already exists.' })
+		@UsePipes(new ValidationPipe({ whitelist: true }))
+		async create(@Body() body: CreateUserDto) {
+			try {
+				return await this.userService.create(body);
+			} catch (err) {
+				if (err instanceof BadRequestException) throw err;
+				throw new BadRequestException('Validation failed');
+			}
+		}
 
 	@Put(':id')
-	@ApiOperation({ summary: 'Update a user by ID' })
-	@ApiResponse({ status: 200, description: 'User updated.' })
-	@UsePipes(new ValidationPipe({ whitelist: true }))
-	async update(@Param('id') id: string, @Body() body: UpdateUserDto) {
-		return this.userService.update(id, body);
-	}
+		@ApiOperation({ summary: 'Update a user by ID' })
+		@ApiResponse({ status: 200, description: 'User updated.' })
+		@ApiBadRequestResponse({ description: 'Validation failed.' })
+		@UsePipes(new ValidationPipe({ whitelist: true }))
+		async update(@Param('id') id: string, @Body() body: UpdateUserDto) {
+			try {
+				return await this.userService.update(id, body);
+			} catch (err) {
+				throw new BadRequestException('Validation failed');
+			}
+		}
 
 	@Delete(':id')
 	@ApiOperation({ summary: 'Delete a user by ID' })
