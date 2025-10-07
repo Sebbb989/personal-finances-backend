@@ -13,7 +13,7 @@ export class AuthService {
 	async validateUser(email: string, pass: string) {
 		const user = await this.prisma.user.findUnique({ where: { email } });
 		if (user && await bcrypt.compare(pass, user.password)) {
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			// Exclude the password field when returning user data
 			const { password, ...result } = user;
 			return result;
 		}
@@ -28,7 +28,7 @@ export class AuthService {
 	}
 
 	async register(data: { email: string, password: string, name: string }) {
-		// Check for duplicate email
+		// Ensure the email is not already registered before creating a new user
 		const existing = await this.prisma.user.findUnique({ where: { email: data.email } });
 		if (existing) {
 			throw new BadRequestException('Email already exists');
@@ -37,7 +37,7 @@ export class AuthService {
 		const user = await this.prisma.user.create({
 			data: { ...data, password: hashed },
 		});
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		// Don't include the password in the returned user object
 		const { password, ...result } = user;
 		return result;
 	}

@@ -8,7 +8,7 @@ import { CreateTransactionDto, UpdateTransactionDto } from './dto/transaction.dt
 export class TransactionController {
 	constructor(private readonly transactionService: TransactionService) {}
 
-	// Calculate user balance (income - expense)
+	// Get the user's balance, total income, and total expenses
 	@Get('balance/:userId')
 	@ApiOperation({ summary: 'Get user balance, income, and expense' })
 	@ApiResponse({ status: 200, description: 'User balance, income, and expense returned.' })
@@ -20,7 +20,7 @@ export class TransactionController {
 		return { balance: income - expense, income, expense };
 	}
 
-	// Spending by category for a user (for charts)
+	// Get how much a user has spent in each category (useful for charts)
 	@Get('spending-by-category/:userId')
 	@ApiOperation({ summary: 'Get user spending by category (for charts)' })
 	@ApiResponse({ status: 200, description: 'Spending by category returned.' })

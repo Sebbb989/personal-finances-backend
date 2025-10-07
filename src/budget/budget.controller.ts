@@ -8,16 +8,16 @@ import { CreateBudgetDto, UpdateBudgetDto } from './dto/budget.dto';
 export class BudgetController {
 	constructor(private readonly budgetService: BudgetService) {}
 
-	// Budget tracking for a user (total, spent, remaining per budget)
+	// Returns budget tracking details for a specific user, including totals, spent, and remaining amounts per budget.
 	@Get('tracking/:userId')
 	@ApiOperation({ summary: 'Get budget tracking for a user' })
 	@ApiResponse({ status: 200, description: 'Budget tracking data returned.' })
 	async budgetTracking(@Param('userId') userId: string) {
 		const budgets = await this.budgetService.findAll();
 		const userBudgets = budgets.filter(b => b.userId === userId);
-		// For each budget, calculate spent and remaining
-		// This assumes you have access to transactionService here, or you can move this logic to a service
-		// For now, return structure for UI
+		// For each budget, we want to show how much has been spent and what's left.
+		// Note: This is a placeholder—replace 'spent' with real calculations from transactions in the service layer.
+		// The structure is ready for the UI to consume.
 		return userBudgets.map(budget => ({
 			...budget,
 			spent: 0, // Fill with actual spent calculation in service
@@ -48,7 +48,7 @@ export class BudgetController {
 	@ApiResponse({ status: 201, description: 'Budget created.' })
 	@UsePipes(new ValidationPipe({ whitelist: true }))
 	async create(@Body() body: CreateBudgetDto) {
-		// Convert date strings to Date objects
+		// Convert incoming date strings to Date objects for consistency before saving.
 		const data = {
 			...body,
 			startDate: new Date(body.startDate),
@@ -63,7 +63,7 @@ export class BudgetController {
 	@ApiResponse({ status: 200, description: 'Budget updated.' })
 	@UsePipes(new ValidationPipe({ whitelist: true }))
 	async update(@Param('id') id: string, @Body() body: UpdateBudgetDto) {
-		// Convert date strings to Date objects if present
+		// If the update includes new dates, convert them to Date objects before updating.
 		const data: any = { ...body };
 		if (body.startDate) data.startDate = new Date(body.startDate);
 		if (body.endDate) data.endDate = new Date(body.endDate);

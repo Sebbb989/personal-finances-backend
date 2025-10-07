@@ -16,7 +16,8 @@ export class CreateTransactionDto {
 
   @ApiProperty({ example: 'expense', description: "'income' or 'expense'" })
   @IsString()
-  type: string; // 'income' or 'expense'
+  // Use 'income' for money in, 'expense' for money out
+  type: string;
 
   @ApiPropertyOptional({ example: 'Dinner at restaurant' })
   @IsString()
