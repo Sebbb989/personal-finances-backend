@@ -30,3 +30,4 @@ lerna-debug.log*
 .temp
 .tmp
 >>>>>>> 28113d1f7d21225759a1e2d9cddcb838f8eb26af
+coverage/
