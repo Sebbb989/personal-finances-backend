@@ -1,13 +1,17 @@
 import { Controller, Get, Post, Put, Delete, Param, Body, NotFoundException, UsePipes, ValidationPipe } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { TransactionService } from './transaction.service';
 import { CreateTransactionDto, UpdateTransactionDto } from './dto/transaction.dto';
 
+@ApiTags('transaction')
 @Controller('transaction')
 export class TransactionController {
 	constructor(private readonly transactionService: TransactionService) {}
 
 	// Calculate user balance (income - expense)
 	@Get('balance/:userId')
+	@ApiOperation({ summary: 'Get user balance, income, and expense' })
+	@ApiResponse({ status: 200, description: 'User balance, income, and expense returned.' })
 	async getBalance(@Param('userId') userId: string) {
 		const transactions = await this.transactionService.findAll();
 		const userTx = transactions.filter(tx => tx.userId === userId);
@@ -18,6 +22,8 @@ export class TransactionController {
 
 	// Spending by category for a user (for charts)
 	@Get('spending-by-category/:userId')
+	@ApiOperation({ summary: 'Get user spending by category (for charts)' })
+	@ApiResponse({ status: 200, description: 'Spending by category returned.' })
 	async spendingByCategory(@Param('userId') userId: string) {
 		const transactions = await this.transactionService.findAll();
 		const userTx = transactions.filter(tx => tx.userId === userId && tx.type === 'expense');
@@ -29,11 +35,16 @@ export class TransactionController {
 	}
 
 	@Get()
+	@ApiOperation({ summary: 'Get all transactions' })
+	@ApiResponse({ status: 200, description: 'All transactions returned.' })
 	async findAll() {
 		return this.transactionService.findAll();
 	}
 
 	@Get(':id')
+	@ApiOperation({ summary: 'Get a transaction by ID' })
+	@ApiResponse({ status: 200, description: 'Transaction found.' })
+	@ApiResponse({ status: 404, description: 'Transaction not found.' })
 	async findOne(@Param('id') id: string) {
 		const transaction = await this.transactionService.findOne(id);
 		if (!transaction) throw new NotFoundException('Transaction not found');
@@ -41,6 +52,8 @@ export class TransactionController {
 	}
 
 	@Post()
+	@ApiOperation({ summary: 'Create a new transaction' })
+	@ApiResponse({ status: 201, description: 'Transaction created.' })
 	@UsePipes(new ValidationPipe({ whitelist: true }))
 	async create(@Body() body: CreateTransactionDto) {
 		const data: any = { ...body };
@@ -50,6 +63,8 @@ export class TransactionController {
 	}
 
 	@Put(':id')
+	@ApiOperation({ summary: 'Update a transaction by ID' })
+	@ApiResponse({ status: 200, description: 'Transaction updated.' })
 	@UsePipes(new ValidationPipe({ whitelist: true }))
 	async update(@Param('id') id: string, @Body() body: UpdateTransactionDto) {
 		const data: any = { ...body };
@@ -59,6 +74,8 @@ export class TransactionController {
 	}
 
 	@Delete(':id')
+	@ApiOperation({ summary: 'Delete a transaction by ID' })
+	@ApiResponse({ status: 200, description: 'Transaction deleted.' })
 	async remove(@Param('id') id: string) {
 		return this.transactionService.remove(id);
 	}
